@@ -1,0 +1,43 @@
+<!-- templates/about/author.html -->
+{% extends "base.html" %}
+{% block title %}Об авторе проекта{% endblock %}
+{% block header %} {% endblock %}
+{% block content %}
+  <div class="row">
+    <!-- Левый вспомогательный блок -->
+    <div class="col-md-3 mb-3 mt-1">
+      <div class="card">
+        <div class="card-body">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <div class="h3">
+                Об авторе
+              </div>
+            </li>
+            <li class="list-group-item">
+              <div class="h6 text-muted">
+                <a href="https://github.com/DevCatRain">Github</a><br>
+                <a href="https://instagram.com/_kate_rain?utm_medium=copy_link">Instagram</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!-- Тело страницы -->
+    <div class="col-md-9">
+      <div class="card-body">
+        <div class="card-text">
+            <h2>Всем привет!</h2><br> 
+            Меня зовут Катерина и мне 32. Последние 5 лет жила и работала во Вьетнаме персональным фитнес-инструктором, 
+            но пандемия внесла свои коррективы в жизни по всему миру, в том числе и мою. 
+            Так что теперь я снова в Москве и готова осваивать новую профессию!
+            В школе обожала программирования и вообще не понимаю, почему высшее получила в университете управления на экономиста. Ошибки молодости нашей.
+            Сейчас приходится нелегко, океан новой информации, который постоянно штормит. Когда-нибудь я увижу штиль, я надеюсь! =))
+            Не знаю, что у меня получится здесь, но очень надеюсь на успех!<br><br> 
+
+            <h5> *P.S.: </h5> Главный мой помощник в обучении Мисс Тиффани, ну или просто Мася
+      </div>
+    </div>
+  </div>
+{% endblock %}
