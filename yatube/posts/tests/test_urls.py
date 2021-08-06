@@ -64,11 +64,16 @@ class PostURLTests(TestCase):
                 response = self.authorized_client.get(address)
                 self.assertTemplateUsed(response, template)
 
-    def test_urls_exists_at_desired_location_authorized(self):
+    def test_new_exists_at_desired_location_authorized(self):
+        """Страница доступна авторизованному пользователю."""
+
+        response = self.authorized_author_client.get('/new/')
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_urls_exist_at_desired_location_authorized(self):
         """Страница доступна авторизованному пользователю."""
 
         url_address_names = (
-            '/new/',
             f'/{self.author.username}/follow/',
             f'/{self.author.username}/unfollow/',
         )
@@ -76,7 +81,7 @@ class PostURLTests(TestCase):
         for address in url_address_names:
             with self.subTest(address=address):
                 response = self.authorized_client.get(address)
-                self.assertEqual(response.status_code, HTTPStatus.OK)
+                self.assertEqual(response.status_code, HTTPStatus.FOUND)
 
     def test_new_post_redirect_anonymous_on_admin_login(self):
         """Страница 'new_post' перенаправит анонимного

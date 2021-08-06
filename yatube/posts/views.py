@@ -21,7 +21,7 @@ def server_error(request):
 
 
 def index(request):
-    post = Post.objects.all()
+    post = Post.objects.select_related('group').all()
     paginator = Paginator(post, settings.POSTS_PER_PAGE)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
@@ -56,20 +56,6 @@ def post_view(request, username, post_id):
     followers_count = Follow.objects.filter(author=post_view.author).count()
     follow_count = Follow.objects.filter(user=post_view.author).count()
 
-    if not request.user.is_authenticated or not Follow.objects.filter(
-        author=post_view.author, user=request.user
-    ).exists():
-        context = {
-            'form': form,
-            'post_view': post_view,
-            'posts_count': posts_count,
-            'comments': comments,
-            'follow_count': follow_count,
-            'followers_count': followers_count,
-        }
-
-        return render(request, 'post.html', context)
-
     context = {
         'form': form,
         'post_view': post_view,
@@ -77,8 +63,21 @@ def post_view(request, username, post_id):
         'comments': comments,
         'follow_count': follow_count,
         'followers_count': followers_count,
-        'following': True,
     }
+
+    if request.user.is_authenticated and Follow.objects.filter(
+        author=post_view.author, user=request.user
+    ).exists():
+
+        context = {
+            'form': form,
+            'post_view': post_view,
+            'posts_count': posts_count,
+            'comments': comments,
+            'follow_count': follow_count,
+            'followers_count': followers_count,
+            'following': True,
+        }
 
     return render(request, 'post.html', context)
 
@@ -150,7 +149,15 @@ def profile(request, username):
     followers_count = Follow.objects.filter(author=author).count()
     follow_count = Follow.objects.filter(user=author).count()
 
-    if not request.user.is_authenticated or not Follow.objects.filter(
+    context = {
+        'author': author,
+        'posts_count': posts_count,
+        'page': page,
+        'follow_count': follow_count,
+        'followers_count': followers_count,
+    }
+
+    if request.user.is_authenticated and Follow.objects.filter(
         author=author, user=request.user
     ).exists():
 
@@ -160,28 +167,14 @@ def profile(request, username):
             'page': page,
             'follow_count': follow_count,
             'followers_count': followers_count,
+            'following': True,
         }
-
-        return render(request, 'profile.html', context)
-
-    context = {
-        'author': author,
-        'posts_count': posts_count,
-        'page': page,
-        'follow_count': follow_count,
-        'followers_count': followers_count,
-        'following': True,
-    }
 
     return render(request, 'profile.html', context)
 
 
 @login_required
 def follow_index(request):
-    # информация о текущем пользователе доступна в переменной request.user
-    # Напишите view-функцию страницы, куда будут выведены посты авторов,
-    # на которых подписан текущий пользователь.
-
     posts = Post.objects.filter(author__following__user=request.user)
 
     paginator = Paginator(posts, settings.POSTS_PER_PAGE)
@@ -193,59 +186,20 @@ def follow_index(request):
 
 @login_required
 def profile_follow(request, username):
-    # view-функция для подписки на интересного автора
-
     author = get_object_or_404(User, username=username)
 
     if request.user != author:
-        if not Follow.objects.filter(
-            author=author, user=request.user
-        ).exists():
-            Follow.objects.create(author=author, user=request.user)
+        Follow.objects.get_or_create(
+            author=author,
+            user=request.user
+        )
 
-    followers_count = Follow.objects.filter(author=author).count()
-    follow_count = Follow.objects.filter(user=author).count()
-    posts_count = author.posts.count()
-
-    paginator = Paginator(author.posts.all(), settings.POSTS_PER_PAGE)
-    page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
-
-    context = {
-        'author': author,
-        'posts_count': posts_count,
-        'page': page,
-        'follow_count': follow_count,
-        'followers_count': followers_count,
-        'following': True
-    }
-
-    return render(request, 'profile.html', context)
+    return redirect('profile', username)
 
 
 @login_required
 def profile_unfollow(request, username):
-    # для того, чтобы отписаться от надоевшего графомана
-
     author = get_object_or_404(User, username=username)
+    Follow.objects.filter(author=author, user=request.user).delete()
 
-    if Follow.objects.filter(author=author, user=request.user).exists():
-        Follow.objects.filter(author=author, user=request.user).delete()
-
-    followers_count = Follow.objects.filter(author=author).count()
-    follow_count = Follow.objects.filter(user=author).count()
-    posts_count = author.posts.count()
-
-    paginator = Paginator(author.posts.all(), settings.POSTS_PER_PAGE)
-    page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
-
-    context = {
-        'author': author,
-        'posts_count': posts_count,
-        'page': page,
-        'follow_count': follow_count,
-        'followers_count': followers_count,
-    }
-
-    return render(request, 'profile.html', context)
+    return redirect('profile', username)
