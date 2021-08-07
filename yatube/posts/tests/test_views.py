@@ -326,6 +326,7 @@ class PostPagesTests(TestCase):
         page_object_2 = response_2.context['page'].object_list
         self.assertEqual((len(page_object_2)), 0)
 
+
 class PaginatorPagesTests(TestCase):
 
     @classmethod
