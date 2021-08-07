@@ -69,13 +69,7 @@ def post_view(request, username, post_id):
         author=post_view.author, user=request.user
     ).exists():
 
-        context = {
-            'form': form,
-            'post_view': post_view,
-            'posts_count': posts_count,
-            'comments': comments,
-            'follow_count': follow_count,
-            'followers_count': followers_count,
+        context.update = {
             'following': True,
         }
 
@@ -161,12 +155,7 @@ def profile(request, username):
         author=author, user=request.user
     ).exists():
 
-        context = {
-            'author': author,
-            'posts_count': posts_count,
-            'page': page,
-            'follow_count': follow_count,
-            'followers_count': followers_count,
+        context.update = {
             'following': True,
         }
 
