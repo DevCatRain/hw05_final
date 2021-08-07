@@ -308,6 +308,23 @@ class PostPagesTests(TestCase):
         page_object_2 = response_2.context['page'].object_list
         self.assertEqual((len(page_object_2)), 1)
 
+    def test_unfollow(self):
+        self.authorized_client.get(
+            reverse('profile_follow', kwargs={'username': self.post.author})
+        )
+
+        response_1 = self.authorized_client.get(reverse('follow_index'))
+        page_object_1 = response_1.context['page'].object_list
+
+        self.assertEqual((len(page_object_1)), 1)
+
+        self.authorized_client.get(
+            reverse('profile_unfollow', kwargs={'username': self.post.author})
+        )
+
+        response_2 = self.authorized_client.get(reverse('follow_index'))
+        page_object_2 = response_2.context['page'].object_list
+        self.assertEqual((len(page_object_2)), 0)
 
 class PaginatorPagesTests(TestCase):
 
