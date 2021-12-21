@@ -2,6 +2,8 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.views.decorators.http import require_GET
+from django.core.cache import cache
 
 from .forms import CommentForm, PostForm
 from .models import Follow, Post, Group, User
@@ -20,17 +22,18 @@ def server_error(request):
     return render(request, 'misc/500.html', status=500)
 
 
+@require_GET
 def index(request):
-    post = Post.objects.select_related('group').all()
-    paginator = Paginator(post, settings.POSTS_PER_PAGE)
+    posts = cache.get('posts:index')
+    if posts is None:
+        posts = Post.objects.select_related('group').all()
+        cache.set('posts:index', posts, timeout=20)
+
+    paginator = Paginator(posts, settings.POSTS_PER_PAGE)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
 
-    return render(
-        request,
-        'index.html',
-        {'page': page}
-    )
+    return render(request, 'posts/index.html', {'page': page})
 
 
 def group_posts(request, slug):
@@ -42,7 +45,7 @@ def group_posts(request, slug):
 
     return render(
         request,
-        'group.html',
+        'posts/group.html',
         {'group': group, 'page': page}
     )
 
@@ -56,6 +59,9 @@ def post_view(request, username, post_id):
     followers_count = Follow.objects.filter(author=post_view.author).count()
     follow_count = Follow.objects.filter(user=post_view.author).count()
 
+    following = request.user.is_authenticated and Follow.objects.filter(
+        user=request.user, author=post_view.author).exists()
+
     context = {
         'form': form,
         'post_view': post_view,
@@ -63,17 +69,10 @@ def post_view(request, username, post_id):
         'comments': comments,
         'follow_count': follow_count,
         'followers_count': followers_count,
+        'following': following,
     }
 
-    if request.user.is_authenticated and Follow.objects.filter(
-        author=post_view.author, user=request.user
-    ).exists():
-
-        context.update = {
-            'following': True,
-        }
-
-    return render(request, 'post.html', context)
+    return render(request, 'posts/post.html', context)
 
 
 @login_required
@@ -87,7 +86,7 @@ def add_comment(request, username, post_id):
         comment.post = post
         comment.save()
 
-    return redirect('post', username, post_id)
+    return redirect('posts:post', username, post_id)
 
 
 @login_required
@@ -99,11 +98,11 @@ def new_post(request):
         post.author = request.user
         post.save()
 
-        return redirect('index')
+        return redirect('posts:index')
 
     return render(
         request,
-        'new_post.html',
+        'posts/new_post.html',
         {'form': form}
     )
 
@@ -118,16 +117,16 @@ def post_edit(request, username, post_id):
     )
 
     if request.user != post_edit.author:
-        return redirect('post', post_edit.author, post_edit.id)
+        return redirect('posts:post', post_edit.author, post_edit.id)
 
     if form.is_valid():
         post_edit.save()
 
-        return redirect('post', post_edit.author, post_edit.id)
+        return redirect('posts:post', post_edit.author, post_edit.id)
 
     return render(
         request,
-        'new_post.html',
+        'posts/new_post.html',
         {'form': form, 'post_edit': post_edit}
     )
 
@@ -143,23 +142,19 @@ def profile(request, username):
     followers_count = Follow.objects.filter(author=author).count()
     follow_count = Follow.objects.filter(user=author).count()
 
+    following = request.user.is_authenticated and Follow.objects.filter(
+        user=request.user, author=author).exists()
+
     context = {
         'author': author,
         'posts_count': posts_count,
         'page': page,
         'follow_count': follow_count,
         'followers_count': followers_count,
+        'following': following,
     }
 
-    if request.user.is_authenticated and Follow.objects.filter(
-        author=author, user=request.user
-    ).exists():
-
-        context.update = {
-            'following': True,
-        }
-
-    return render(request, 'profile.html', context)
+    return render(request, 'posts/profile.html', context)
 
 
 @login_required
@@ -170,7 +165,7 @@ def follow_index(request):
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
 
-    return render(request, "follow.html", {'page': page})
+    return render(request, "posts/follow.html", {'page': page})
 
 
 @login_required
@@ -183,7 +178,7 @@ def profile_follow(request, username):
             user=request.user
         )
 
-    return redirect('profile', username)
+    return redirect('posts:profile', username)
 
 
 @login_required
@@ -191,4 +186,4 @@ def profile_unfollow(request, username):
     author = get_object_or_404(User, username=username)
     Follow.objects.filter(author=author, user=request.user).delete()
 
-    return redirect('profile', username)
+    return redirect('posts:profile', username)
