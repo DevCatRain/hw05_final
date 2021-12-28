@@ -6,7 +6,7 @@
 Подключены пагинация, кеширование, авторизация пользователя, возможна смена пароля через почту.
 
 
-Инструментарий:
+# Инструментарий:
 
 Django 2.2
 Python 3.9
@@ -15,11 +15,11 @@ Django debug toolbar
 PostgreSQL
 Django ORM
 
-Запуск:
+# Запуск:
   Установка зависимостей:
     <pip install -r requirements.txt>
 
-  Применение миграций:
+  Применение миграций: 
     <python manage.py makemigrations>
     <python manage.py migrate>
 
@@ -30,4 +30,4 @@ Django ORM
     <python manage.py runserver>
       
 
-Проект размещен по адресу: catrain2020-ya.tk
+# Проект размещен по адресу: catrain2020-ya.tk
