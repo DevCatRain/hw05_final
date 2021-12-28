@@ -16,18 +16,18 @@ PostgreSQL
 Django ORM
 
 # Запуск:
-  Установка зависимостей:
-    <pip install -r requirements.txt>
+Установка зависимостей:
+<pip install -r requirements.txt>
 
-  Применение миграций: 
-    <python manage.py makemigrations>
-    <python manage.py migrate>
+Применение миграций: 
+<python manage.py makemigrations>
+<python manage.py migrate>
 
-  Создание администратора:
-    <python manage.py createsuperuser>
+Создание администратора:
+<python manage.py createsuperuser>
 
-  Запуск приложения:
-    <python manage.py runserver>
+Запуск приложения:
+<python manage.py runserver>
       
 
 # Проект размещен по адресу: catrain2020-ya.tk
