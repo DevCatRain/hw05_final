@@ -23,7 +23,7 @@
         <cd api_yamdb>
 
     Cоздать и активировать виртуальное окружение:
-        <python -m venv env>
+        <python -m venv venv>
         <source venv/Scripts/activate>
     
     Обновить менеджер пакетов:
@@ -38,7 +38,6 @@
     Запустить проект:
         <python manage.py runserver>
     
-
 
 # Инструментарий:
 
