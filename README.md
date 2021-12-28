@@ -1,5 +1,5 @@
 # Социальная сеть YaTube
-=======
+
 В проекте реализованы следующие функции:
 
 - добавление/удаление постов авторизованными пользователями
@@ -15,6 +15,31 @@
 Покрытие тестами.
 
 
+# Запуск:
+    Клонировать репозиторий:
+        <git clone https://github.com/DevCatRain/api_yamdb.git>
+    
+    перейти в него в командной строке:
+        <cd api_yamdb>
+
+    Cоздать и активировать виртуальное окружение:
+        <python -m venv env>
+        <source venv/Scripts/activate>
+    
+    Обновить менеджер пакетов:
+        <python -m pip install --upgrade pip>
+
+    Установить зависимости из файла requirements.txt:
+        <pip install -r requirements.txt>
+
+    Выполнить миграции:
+        <python manage.py migrate>
+
+    Запустить проект:
+        <python manage.py runserver>
+    
+
+
 # Инструментарий:
 
     Django 2.2
@@ -24,20 +49,4 @@
     PostgreSQL
     Django ORM
 
-
-# Запуск:
-    Установка зависимостей:
-        <pip install -r requirements.txt>
-
-    Применение миграций: 
-        <python manage.py makemigrations>
-        <python manage.py migrate>
-
-    Создание администратора:
-        <python manage.py createsuperuser>
-
-    Запуск приложения:
-        <python manage.py runserver>
-      
-
-Проект размещен по адресу: catrain2020-ya.tk
+# Проект размещен по адресу: catrain2020-ya.tk
