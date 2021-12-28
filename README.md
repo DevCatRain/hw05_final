@@ -17,7 +17,7 @@
 
 # Запуск:
     Клонировать репозиторий:
-        <git clone https://github.com/DevCatRain/api_yamdb.git>
+        <git clone https://github.com/DevCatRain/hw05_final.git>
     
     перейти в него в командной строке:
         <cd api_yamdb>
